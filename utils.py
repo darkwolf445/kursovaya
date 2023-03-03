@@ -3,13 +3,20 @@ import json
 from datetime import datetime as dt
 
 
-def open_operations_json():
+def open_operations_json(my_json):
     """
-    С помощью функции считываем djon файл
+    С помощью функции считываем json файл
     """
-    with open("operations.json", "r", encoding="utf-8") as file:
-        data = json.load(file)
-        return data
+    try:
+        with open(my_json, "r", encoding="utf-8") as file:
+            try:
+                data = json.load(file)
+                return data, "Данные получены успешно"
+            except json.decoder.JSONDecodeError:
+                return None, "ERROR: Это не json файл"
+    except FileNotFoundError:
+        return None, "ERROR: Файл отсутствует в данной директории"
+
 
 def numbers(new_json):
     """
@@ -34,6 +41,10 @@ def sort_dict_by_date(dict_list)->list:
     return dict_list_sorted
 
 def last_five_count(list_sort, number):
+    """
+    На старте функция принимает отсортированный список и число кол-во вывода операций
+    Далее функция выводит информацию по последним переводам по дате.
+    """
     text = ""
     for i in range(number):
         text += datetime.date.fromisoformat(list_sort[i]["date"][0:10]).strftime('%d-%m-%Y') + " "
@@ -45,6 +56,9 @@ def last_five_count(list_sort, number):
     return text
 
 def code_text(text):
+    """
+    Функия для шифровки номера карты или номера счета
+    """
     new_list = text.split()
     if new_list[0] == "Счет":
         return new_list[0] + " **" + new_list[1][-4::]
